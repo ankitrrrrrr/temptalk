@@ -1,0 +1,192 @@
+<!-- 
+  This is a complete, self-contained HTML file for a chat interface.
+  It uses Tailwind CSS for all styling to create a modern, futuristic dark theme.
+  The design uses a deep gray background, subtle lighter grays for containers,
+  and a vibrant green accent color for interactive elements and highlights.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport for responsive design. Essential for a good mobile experience. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Chat UI</title>
+    <!--
+        Tailwind CSS is loaded directly from a CDN. This is perfect for a quick demo
+        as it provides a vast library of utility classes for styling.
+        The "Inter" font is also imported to ensure a clean, modern look.
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar styles for a sleeker look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #4a5568; /* a darker gray */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #2d3748; /* a deep gray */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 antialiased flex items-center justify-center min-h-screen">
+
+    <!-- Main container for the chat application -->
+    <div class="bg-gray-800 rounded-3xl shadow-2xl overflow-hidden w-full max-w-5xl h-[90vh] flex flex-col md:flex-row">
+
+        <!-- Sidebar for rooms and users -->
+        <aside class="w-full md:w-1/4 bg-gray-900 border-r-2 border-gray-700 p-6 flex flex-col">
+            <div class="flex-none pb-4 border-b border-gray-700 mb-6">
+                <h2 class="text-2xl font-bold tracking-wide">CHAT ROOM</h2>
+            </div>
+            
+            <!-- Rooms list -->
+            <div class="mb-8">
+                <h3 class="text-sm uppercase text-gray-400 font-semibold mb-3">Rooms</h3>
+                <ul>
+                    <li class="p-3 mb-2 rounded-lg bg-emerald-600 text-white font-medium cursor-pointer transition-colors">
+                        # general
+                    </li>
+                    <li class="p-3 mb-2 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
+                        # development
+                    </li>
+                    <li class="p-3 mb-2 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
+                        # design-talks
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Online users list -->
+            <div class="flex-grow">
+                <h3 class="text-sm uppercase text-gray-400 font-semibold mb-3">Online Users</h3>
+                <ul>
+                    <li class="flex items-center space-x-3 mb-3">
+                        <span class="w-3 h-3 bg-emerald-500 rounded-full"></span>
+                        <span class="text-gray-300">neha</span>
+                    </li>
+                    <li class="flex items-center space-x-3 mb-3">
+                        <span class="w-3 h-3 bg-emerald-500 rounded-full"></span>
+                        <span class="text-gray-300">ankit</span>
+                    </li>
+                    <li class="flex items-center space-x-3 mb-3">
+                        <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                        <span class="text-gray-300">alex</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- "Leave Chat" button -->
+            <div class="mt-auto">
+                <button class="w-full py-3 rounded-lg text-red-400 border border-red-400 hover:bg-red-900/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 9v-4l8 7-8 7v-4h-8v-6h8zm-16-7v20h14v-2h-12v-16h12v-2h-14z"/>
+                    </svg>
+                    Leave Chat
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main chat content area -->
+        <main class="w-full md:w-3/4 flex flex-col p-6">
+            <!-- Chat header -->
+            <header class="flex-none pb-4 border-b-2 border-gray-700 mb-6 flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-white tracking-wide"># general</h1>
+                <div class="flex items-center space-x-2 text-sm text-gray-400">
+                    <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+                    <span class="font-semibold">Connected</span>
+                </div>
+            </header>
+
+            <!-- Message display area -->
+            <div id="message-container" class="flex-grow overflow-y-auto space-y-4 pr-2">
+                <!-- Example message from another user -->
+                <div class="flex justify-start">
+                    <div class="max-w-xs sm:max-w-sm lg:max-w-md p-4 rounded-xl shadow-md bg-gray-700 text-gray-100">
+                        <div class="flex items-center space-x-2 text-xs text-gray-400 mb-1">
+                            <span class="font-semibold text-gray-300">ankit</span>
+                            <span class="text-gray-500 text-xs">22:53</span>
+                        </div>
+                        <p>okay</p>
+                    </div>
+                </div>
+
+                <!-- Example message from the current user -->
+                <div class="flex justify-end">
+                    <div class="max-w-xs sm:max-w-sm lg:max-w-md p-4 rounded-xl shadow-md bg-emerald-600 text-white">
+                        <p>can we talk?</p>
+                        <div class="text-right text-xs text-emerald-200 mt-1">22:55</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message input form at the bottom -->
+            <footer class="flex-none pt-6 border-t-2 border-gray-700">
+                <form id="chat-form" class="flex items-center space-x-4">
+                    <input
+                        type="text"
+                        id="message-input"
+                        placeholder="Type your message..."
+                        class="flex-grow p-4 bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow"
+                    />
+                    <button
+                        type="submit"
+                        class="p-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-lg"
+                    >
+                        <!-- Send icon (inline SVG) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                    </button>
+                </form>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Get references to DOM elements
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const messageContainer = document.getElementById('message-container');
+
+        // Function to handle a new message submission
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the form from submitting in the traditional way
+            const messageText = messageInput.value.trim();
+
+            if (messageText) {
+                // Get current time for the message timestamp
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                // Create a new message bubble element
+                const messageBubble = document.createElement('div');
+                messageBubble.className = 'flex justify-end'; // Align to the right for the current user
+
+                // Inner message content with styling
+                messageBubble.innerHTML = `
+                    <div class="max-w-xs sm:max-w-sm lg:max-w-md p-4 rounded-xl shadow-md bg-emerald-600 text-white">
+                        <p>${messageText}</p>
+                        <div class="text-right text-xs text-emerald-200 mt-1">${timeString}</div>
+                    </div>
+                `;
+
+                // Add the new message to the container
+                messageContainer.appendChild(messageBubble);
+
+                // Clear the input field for the next message
+                messageInput.value = '';
+
+                // Automatically scroll to the bottom of the chat to show the new message
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            }
+        });
+    </script>
+
+</body>
+</html>

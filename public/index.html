@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TempTalk - Anonymous Temporary Chat</title>
+    
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-100 antialiased">
+    
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-page min-h-screen flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-3xl shadow-2xl overflow-hidden w-full max-w-4xl p-8">
+            
+            <!-- Hero Section -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-wide mb-6">
+                    <span class="text-white">TEMP</span><span class="text-emerald-500">TALK</span>
+                </h1>
+                <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                    Chat anonymously. Leave no trace. Connect instantly with others in temporary chat rooms.
+                </p>
+                
+                <!-- Features List -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto">
+                    <div class="flex items-center space-x-3 text-left">
+                        <i class="bi bi-shield-check text-emerald-500 text-xl"></i>
+                        <span class="text-gray-300">100% Anonymous</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-left">
+                        <i class="bi bi-trash text-emerald-500 text-xl"></i>
+                        <span class="text-gray-300">Auto-delete Messages</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-left">
+                        <i class="bi bi-lock text-emerald-500 text-xl"></i>
+                        <span class="text-gray-300">Private Chats</span>
+                    </div>
+                    <div class="flex items-center space-x-3 text-left">
+                        <i class="bi bi-lightning text-emerald-500 text-xl"></i>
+                        <span class="text-gray-300">Instant Access</span>
+                    </div>
+                </div>
+                
+                <!-- Username Input Section -->
+                <div class="max-w-md mx-auto">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-200">Choose a username to get started:</h3>
+                    <div class="flex flex-col space-y-4">
+                        <input 
+                            type="text" 
+                            id="usernameInput" 
+                            placeholder="Enter your username" 
+                            maxlength="20"
+                            class="w-full p-4 bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow"
+                        >
+                        <button 
+                            id="joinButton" 
+                            onclick="joinChat()"
+                            class="w-full py-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-lg font-semibold"
+                        >
+                            <i class="bi bi-arrow-right mr-2"></i>Start Chatting
+                        </button>
+                    </div>
+                    
+                    <!-- Connection Status -->
+                    <div class="mt-6">
+                        <div id="connectionStatus" class="inline-flex items-center space-x-2 text-sm">
+                            <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                            <span class="text-gray-400">Connecting...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Privacy Section -->
+            <div class="border-t border-gray-700 pt-8">
+                <h3 class="text-2xl font-bold text-center mb-6 text-white">Your Privacy is Our Priority</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="bi bi-eye-slash text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-semibold mb-2 text-white">No Tracking</h4>
+                        <p class="text-gray-400 text-sm">We don't use cookies, analytics, or any tracking mechanisms.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="bi bi-server text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-semibold mb-2 text-white">No Data Storage</h4>
+                        <p class="text-gray-400 text-sm">Messages are kept in memory only and deleted when sessions end.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="bi bi-shield-x text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-semibold mb-2 text-white">No Registration</h4>
+                        <p class="text-gray-400 text-sm">No emails, passwords, or personal information required.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Application -->
+    <div id="chatApp" class="chat-app hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-3xl shadow-2xl overflow-hidden w-full max-w-6xl h-[90vh] flex flex-col md:flex-row">
+            
+            <!-- Sidebar -->
+            <aside id="sidebar" class="w-full md:w-1/4 bg-gray-900 border-r-2 border-gray-700 p-6 flex flex-col">
+                
+                <!-- Sidebar Header -->
+                <div class="flex-none pb-4 border-b border-gray-700 mb-6 flex items-center justify-between">
+                    <h2 class="text-2xl font-bold tracking-wide text-white">
+                        <i class="bi bi-chat-dots mr-2 text-emerald-500"></i>TEMPTALK
+                    </h2>
+                    <button id="closeSidebar" class="md:hidden text-gray-400 hover:text-white">
+                        <i class="bi bi-x-lg text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- User Info -->
+                <div class="flex-none pb-4 border-b border-gray-700 mb-6">
+                    <div class="flex items-center space-x-3">
+
+                        <div>
+                            <div id="currentUsername" class="font-semibold text-gray-200"></div>
+                            <div class="flex items-center space-x-2 text-sm">
+                                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                                <span class="text-emerald-500 font-medium">Online</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rooms Section -->
+                <div class="mb-8">
+                    <h3 class="text-sm uppercase text-gray-400 font-semibold mb-3">
+                        Rooms
+                    </h3>
+                    <ul id="roomList">
+                        <li class="room-item active p-3 mb-2 rounded-lg bg-emerald-600 text-white font-medium cursor-pointer transition-colors" 
+                            data-room="general" onclick="switchRoom('general')">
+                            # general
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Online Users Section -->
+                <div class="flex-grow">
+                    <h3 class="text-sm uppercase text-gray-400 font-semibold mb-3 flex items-center justify-between">
+                        <span>
+                            Online Users (<span id="userCount">0</span>)
+                        </span>
+                        <button id="toggleUsers" class="text-gray-500 hover:text-gray-300">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </h3>
+                    <ul id="userList" class="space-y-2">
+                        <!-- Users will be populated here -->
+                    </ul>
+                </div>
+                
+                <!-- Leave Chat Button -->
+                <div class="mt-auto">
+                    <button onclick="leaveChat()" class="w-full py-3 rounded-lg text-red-400 border border-red-400 hover:bg-red-900/50 transition-colors">
+                        <i class="bi bi-box-arrow-left mr-2"></i>
+                        Leave Chat
+                    </button>
+                </div>
+            </aside>
+            
+            <!-- Main Chat Area -->
+            <main class="w-full md:w-3/4 flex flex-col p-6">
+                
+                <!-- Chat Header -->
+                <header class="flex-none pb-4 border-b-2 border-gray-700 mb-6 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <button id="toggleSidebar" class="md:hidden p-2 text-gray-400 hover:text-white">
+                            <i class="bi bi-list text-xl"></i>
+                        </button>
+                        <div>
+                            <h1 id="currentRoom" class="text-2xl font-bold text-white tracking-wide"># general</h1>
+                            <p class="text-sm text-gray-400">Public room</p>
+                        </div>
+                    </div>
+                    <div id="connectionBadge" class="flex items-center space-x-2 text-sm text-gray-400">
+                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+                        <span class="font-semibold">Connected</span>
+                    </div>
+                </header>
+                
+                <!-- Message Display Area -->
+                <div id="messages" class="flex-grow overflow-y-auto space-y-4 pr-2 mb-6">
+                    <!-- Welcome Message -->
+                    <div class="welcome-message text-center py-12">
+                        <i class="bi bi-chat-heart text-6xl text-emerald-500 mb-4 block"></i>
+                        <h4 class="text-xl font-semibold text-white mb-2">Welcome to TempTalk!</h4>
+                        <p class="text-gray-400">Start the conversation. Messages will appear here.</p>
+                    </div>
+                </div>
+                
+                <!-- Message Input Form -->
+                <footer class="flex-none pt-6 border-t-2 border-gray-700">
+                    <div class="flex items-center space-x-4">
+                        <textarea
+                            id="messageInput"
+                            placeholder="Type your message..."
+                            rows="1"
+                            class="flex-grow p-4 bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow resize-none max-h-32"
+                        ></textarea>
+                        <button
+                            id="sendButton"
+                            onclick="sendMessage()"
+                            class="p-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-lg"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                        </button>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Private Chat Invitation Modal -->
+    <div id="invitationModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-700">
+            <div class="flex items-center mb-4">
+                <i class="bi bi-person-plus text-emerald-500 text-2xl mr-3"></i>
+                <h3 class="text-xl font-bold text-white">Private Chat Invitation</h3>
+            </div>
+            <p id="invitationText" class="text-gray-300 mb-6"></p>
+            <div class="flex space-x-4">
+                <button onclick="dismissInvitation()" class="flex-1 py-3 px-4 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors">
+                    <i class="bi bi-x mr-2"></i>Decline
+                </button>
+                <button onclick="acceptPrivateChat()" class="flex-1 py-3 px-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+                    <i class="bi bi-check mr-2"></i>Accept
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="errorToast" class="toast fixed top-4 right-4 bg-gray-800 border border-red-500 rounded-lg p-4 hidden z-50">
+        <div class="flex items-center">
+            <i class="bi bi-exclamation-triangle-fill text-red-400 mr-3"></i>
+            <div>
+                <strong class="text-white">Error</strong>
+                <div id="errorToastBody" class="text-gray-300"></div>
+            </div>
+            <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-gray-400 hover:text-white">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="socket-client.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
