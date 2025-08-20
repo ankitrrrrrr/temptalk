@@ -1698,6 +1698,15 @@ body {
         width: 100% !important;
     }
 
+    /* Chat Header - keep it fixed when keyboard appears */
+    header.flex-none {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--color-charcoal-800) !important;
+        z-index: 10 !important;
+        flex-shrink: 0 !important;
+    }
+
     /* Main chat area - this is the key fix */
     main.w-full.md\:w-3\/4 {
         height: calc(100vh - 2rem);
@@ -1714,6 +1723,7 @@ body {
         min-height: 0;
         -webkit-overflow-scrolling: touch;
         margin-bottom: 0 !important;
+        height: 0;
     }
 
     /* Input area - stays at bottom */
