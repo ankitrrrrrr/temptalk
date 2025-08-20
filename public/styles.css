@@ -1682,6 +1682,50 @@ body {
     display: block !important;
 }
 
+/* MOBILE LAYOUT FIXES - Add this section */
+@media (max-width: 767px) {
+    .chat-app {
+        padding: 0 !important;
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    .chat-app .bg-gray-800 {
+        height: 100vh !important;
+        height: 100dvh !important;
+        max-width: none !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Main chat area - this is the key fix */
+    main.w-full.md\:w-3\/4 {
+        height: calc(100vh - 2rem);
+        height: calc(100dvh - 2rem);
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    /* Messages container */
+    #messages {
+        flex: 1 1 0%;
+        overflow-y: auto;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 0 !important;
+    }
+
+    /* Input area - stays at bottom */
+    footer.flex-none {
+        flex: 0 0 auto;
+        padding-bottom: env(safe-area-inset-bottom);
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+
 /* Mobile Responsive - 480px breakpoint */
 @media (max-width: 480px) {
     #sidebar {
