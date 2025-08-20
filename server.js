@@ -27,6 +27,24 @@ setInterval(() => {
     });
 }, 60000);
 
+// Clean up disconnected users every 30 seconds
+setInterval(() => {
+    const connectedSocketIds = new Set();
+
+    // Get all currently connected socket IDs
+    io.sockets.sockets.forEach(socket => {
+        connectedSocketIds.add(socket.id);
+    });
+
+    // Remove users whose sockets are no longer connected
+    Object.keys(users).forEach(socketId => {
+        if (!connectedSocketIds.has(socketId)) {
+            console.log(`Cleaning up disconnected user: ${users[socketId]?.username}`);
+            delete users[socketId];
+        }
+    });
+}, 30000);
+
 // Initialize general room
 messages['general'] = [];
 
@@ -46,20 +64,67 @@ function getAllOnlineUsers() {
     }));
 }
 
+// Helper function to clean up user data
+function cleanupUser(socketId) {
+    if (users[socketId]) {
+        const user = users[socketId];
+        console.log(`Cleaning up user: ${user.username} (${socketId})`);
+
+        // Remove from users
+        delete users[socketId];
+
+        // Clear private rooms/messages involving this user
+        rooms.forEach(roomId => {
+            if (roomId !== 'general' && roomId.includes(user.username)) {
+                delete messages[roomId];
+                rooms.delete(roomId);
+            }
+        });
+
+        // Notify others
+        io.emit('user-left', user.username);
+
+        // Update user lists
+        io.emit('users-list', getAllOnlineUsers());
+
+        return user;
+    }
+    return null;
+}
+
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
     // Handle user joining
     socket.on('join-chat', (username) => {
+        console.log(`Join attempt: "${username}" from socket ${socket.id}`);
+
+        // First, clean up any existing entry for this socket
+        if (users[socket.id]) {
+            console.log(`Cleaning up existing user for socket ${socket.id}`);
+            cleanupUser(socket.id);
+        }
 
         // Check for username uniqueness (case-insensitive)
-        const usernameTaken = Object.values(users).some(
+        const existingUser = Object.values(users).find(
             user => user.username.toLowerCase() === username.toLowerCase()
         );
-        if (usernameTaken) {
-            socket.emit('error', 'Username already taken. Please choose another.');
-            return;
+
+        if (existingUser) {
+            console.log(`Username "${username}" already taken by socket ${existingUser.socketId}`);
+
+            // Double-check if that socket is actually still connected
+            const existingSocket = io.sockets.sockets.get(existingUser.socketId);
+            if (!existingSocket || !existingSocket.connected) {
+                console.log(`Cleaning up stale user entry for ${username}`);
+                cleanupUser(existingUser.socketId);
+                // Continue with the join process since the user was stale
+            } else {
+                socket.emit('error', 'Username already taken. Please choose another.');
+                return;
+            }
         }
+
         // Store user info
         users[socket.id] = {
             socketId: socket.id,
@@ -75,6 +140,12 @@ io.on('connection', (socket) => {
         // Send previous messages from general room
         socket.emit('previous-messages', messages['general'] || []);
 
+        // Emit success event to the joining user FIRST
+        socket.emit('join-success', {
+            username: username,
+            room: 'general'
+        });
+
         // Send list of online users
         socket.emit('users-list', getAllOnlineUsers());
 
@@ -84,13 +155,7 @@ io.on('connection', (socket) => {
         // Update user lists for everyone
         io.emit('users-list', getAllOnlineUsers());
 
-        // Emit success event to the joining user
-        socket.emit('join-success', {
-            username: username,
-            room: 'general'
-        });
-
-        console.log(`${username} joined the chat`);
+        console.log(`${username} successfully joined the chat (${socket.id})`);
     });
 
     // Handle room switching
@@ -181,30 +246,16 @@ io.on('connection', (socket) => {
         console.log(`${message.username} in ${user.currentRoom}: ${message.text}`);
     });
 
-    // Handle user disconnect
-    socket.on('disconnect', () => {
-        if (users[socket.id]) {
-            const user = users[socket.id];
+    // Handle explicit disconnect
+    socket.on('disconnect', (reason) => {
+        console.log(`User disconnected: ${socket.id} (${reason})`);
+        cleanupUser(socket.id);
+    });
 
-            // Remove from users
-            delete users[socket.id];
-
-            // Clear private rooms/messages involving this user
-            rooms.forEach(roomId => {
-                if (roomId !== 'general' && roomId.includes(user.username)) {
-                    delete messages[roomId];
-                    rooms.delete(roomId);
-                }
-            });
-
-            // Notify others
-            socket.broadcast.emit('user-left', user.username);
-
-            // Update user lists
-            io.emit('users-list', getAllOnlineUsers());
-
-            console.log(`${user.username} left the chat`);
-        }
+    // Handle connection errors
+    socket.on('error', (error) => {
+        console.error(`Socket error for ${socket.id}:`, error);
+        cleanupUser(socket.id);
     });
 });
 
